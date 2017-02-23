@@ -31,24 +31,26 @@ enum ardState {
   // i.e. incopatible PROTOCOL_VER
   error_state,
   //check if connection still exists
-  keep_alive,
+  keep_alive,		//2
   //send Arduino board info and reset quere
   hand_shake,
   //reset Pin quere and send first Digital
-  reset_pin_info,
+  reset_pin_info,		//4
   // send NEXT Digial Pin and after Analog Pin or NULL if no more Pin Info
   get_pin_info, 
   // send NEXT Digial Pin info or NULL if no more Digital Pin Info
   // get all states bits (0 no trigger, 1 triggers occupied on) based on the Digital+Analog info order
-  get_states,
+  get_states,		//6
   // return 2bytes Analog value of the PIN + 2bytes treshhold(4bytes)
   get_Apin,
   // set the Pin state -->0,1
-  setD,
+  setD,		//8
   // set the threshold
   set_Atreshold,
   // receive message from I2C Master
-  msg_pending,
+  msg_to_slave,	//10
+  // sending message to I2C Master
+  msg_to_master,
   
 };
 

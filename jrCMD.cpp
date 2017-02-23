@@ -37,14 +37,15 @@ struct ParserCmd {
 int JRcmd::add(char const *cmd,jrCommandFoo *_foo) {
 	ParserCmd newItem;
 	
-	JR_PRINTF("JRcmd::add ");JR_POINTER(cmd); JR_PRINTF(" ");JR_PRINTLN(cmd); 	
-	strcpy(newItem.command,cmd);
-	//newItem.command=*cmd;
+	JR_PRINTF("JRcmd::add  ");JR_POINTER(cmd); JR_PRINTF(" ");JR_PRINTLN(cmd); 	
+	//strcpy(newItem.command,cmd);
+	newItem.command=cmd;
 	newItem.foo=_foo;
+	newItem.progmem=false;
 	jrDYN;jrDYN_Add(parserCmd,newItem,parserCmdCount,sizeof(ParserCmd));
 	return parserCmdCount;
 }	
-
+/*
 int JRcmd::addF(char const *cmd,jrCommandFoo *_foo) {
 	ParserCmd newItem;
 	
@@ -55,17 +56,22 @@ int JRcmd::addF(char const *cmd,jrCommandFoo *_foo) {
 	jrDYN;jrDYN_Add(parserCmd,newItem,parserCmdCount,sizeof(ParserCmd));
 	return parserCmdCount;
 }	
+*/
 
 int JRcmd::add(const __FlashStringHelper* cmd,jrCommandFoo *_foo) {
 	ParserCmd newItem;
-	strcpy_P(newItem.command,(const char*) cmd);
-	JR_PRINTF("JRcmd::addG ");JR_POINTER(cmd); JR_PRINTF(" ");JR_PRINTLN(newItem.command); 	
+	//strcpy_P(newItem.command,(const char*) cmd);
+	newItem.command=(const char*) cmd;
+	newItem.foo=_foo;
+	newItem.progmem=true;
+	jrDYN;jrDYN_Add(parserCmd,newItem,parserCmdCount,sizeof(ParserCmd));
+	JR_PRINTF("JRcmd::addF ");JR_POINTER(cmd); JR_PRINTF(" ");JR_PRINTLN(cmd); 	
 }
 
 //__FlashStringHelper*
 
 // --------------------------- default commands ------------------------
-
+/*
 bool cmd_pin2(ParserParam *p1) {
 	JR_PRINTLNF("cmd_pin2"); 
   ParserParam p=*p1;
@@ -74,20 +80,20 @@ bool cmd_pin2(ParserParam *p1) {
 	JR_PRINTV("val",(p.i[2]==0)?LOW:HIGH);
 	JR_LN;
 };
-
+*/
 
 	
 int  JRcmd::standard() {
   JR_PRINTLNF("JRcmd::standard"); 
   
-	addF(PSTR("MAIN"),&jr_cmd_main);
+	add(F("MAIN") ,&jr_cmd_main);
 	add(F("PIN")  ,&jr_cmd_pin); 
-	add("PIN2", &cmd_pin2); 
-	add("GETA" ,&jr_cmd_getA);
-	add("GETD" ,&jr_cmd_getD);
-	add("SHOW" ,&jr_cmd_show);
-	add("RESET",&jr_cmd_reset);
-	add("SOFT" ,&jr_cmd_softreset);
+//	add(F("PIN2") ,&cmd_pin2); 
+	add(F("GETA") ,&jr_cmd_getA);
+	add(F("GETD") ,&jr_cmd_getD);
+	add(F("SHOW") ,&jr_cmd_show);
+	add(F("RESET"),&jr_cmd_reset);
+	add(F("SOFT") ,&jr_cmd_softreset);
 	
 	return parserCmdCount;
 
@@ -112,6 +118,7 @@ bool jr_cmd_show(ParserParam *p1) {
 	JR_PRINTV(F("HIGH"),HIGH);	
 	JR_PRINTV(F("A0"),A0);	
 	JR_PRINTV(F("A7"),A7);	
+	JR_PRINTV(F("CMD_BUF"),CMD_BUF);
 	JR_LN;
 };
 
@@ -153,7 +160,6 @@ bool jr_cmd_getD(ParserParam *p1) {
 bool jr_cmd_main(ParserParam *p1){
 	JR_PRINTLNF("jr_cmd_main"); 
   ParserParam p=*p1;
-  DEBUG_PRINT(p.raw	); 
 	 JR_LN; JR_PRINTF("A: ");
 		
   for (int i=0;i<=8;i++) {
@@ -178,11 +184,8 @@ bool jr_cmd_main(ParserParam *p1){
 };
 
 
-
 // --------------------------- parse ------------------------
 
-
-//int jr_command_parse(char *bufor,byte bufor_used) {
 int JRcmd::parse(char *bufor,byte bufor_used){
 
       ParserParam cmd;
@@ -191,20 +194,21 @@ int JRcmd::parse(char *bufor,byte bufor_used){
         return -1;
     }
 
-
       //clear cmd
-      int k;
       for (int l=0;l<CMD_PARAMS;l++) {
-        for (k=0;k<CMD_FOO;k++) {
+        for (int k=0;k<CMD_FOO+1;k++) {
           cmd.c[l][k]=0;
         }
         cmd.i[l]=0;
       }
-
-      
-      k=0;int j=0;
+			for (int k=0;k<CMD_BUF+1;k++) {
+				cmd.raw[k]=0;
+			}
+			
+      int k=0;int j=0;
       bufor[bufor_used]=' '; // for processing last params
       {for (int i=0;i<bufor_used+1;i++) {
+				if (j>=CMD_PARAMS) break;
         if (bufor[i]==' ' || k>=CMD_FOO) {
           cmd.c[j][k]=0;
           cmd.i[j]=atoi(cmd.c[j]);
@@ -230,7 +234,10 @@ int JRcmd::parse(char *bufor,byte bufor_used){
 			//find parserCmd
 			JR_PRINTLN(F("ParserCmd"));
 			for (int l=0;l<parserCmdCount;l++) {
-				if  (strcmp(cmd.c[0],parserCmd[l].command)==0) {
+				//JR_VF(l);JR_PRINT(cmd.c[0]);JR_PRINTF("-");JR_PRINT(parserCmd[l].command);JR_LN;
+				if  ((!parserCmd[l].progmem && strcmp(cmd.c[0],parserCmd[l].command)==0) 
+						||
+						(parserCmd[l].progmem && strcmp_P(cmd.c[0],parserCmd[l].command)==0)) {
 						strcpy(cmd.raw,bufor);
 						parserCmd[l].foo(&cmd);
 						return l;
@@ -245,7 +252,6 @@ JRcmd::JRcmd() {
 }
 
 // --------------------------- Stream proceed ------------------------
-//int jr_command(Stream *serial) {
 int JRcmd::proceed(Stream *serial){
   
   static char bufor[CMD_BUF]="";
@@ -284,12 +290,13 @@ int JRcmd::proceed(Stream *serial){
     if (byte(c)==10 || byte(c)==13 || byte(c)==0) {
     
 			if (parse(bufor,bufor_pos)<0) {
-				//no command found
-				//print help
+				//no command found (yet)
+				//print help with avaiable registered function 
 				JR_PRINTF("Available functions:");
 				for (int l=0;l<parserCmdCount;l++) {
 				 JR_PRINTF(" ");
-				 JR_PRINT(parserCmd[l].command);
+				 if (parserCmd[l].progmem) JR_PRINT((const __FlashStringHelper*) parserCmd[l].command); 
+															else JR_PRINT(parserCmd[l].command);
 				 }
 				 JR_LN;
 			}
