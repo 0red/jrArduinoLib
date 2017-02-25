@@ -41,15 +41,19 @@ enum ardState {
   // send NEXT Digial Pin info or NULL if no more Digital Pin Info
   // get all states bits (0 no trigger, 1 triggers occupied on) based on the Digital+Analog info order
   get_states,		//6
-  // return 2bytes Analog value of the PIN + 2bytes treshhold(4bytes)
+  // pin --> <A0 analog array >=A0(14 HW number)
+  // return 2bytes Analog value of the PIN + 2bytes treshhold (total 4bytes)
   get_Apin,
   // set the Pin state -->0,1
+  // spi (0..3 port 7bit=1 (128) --> according to digital table 
+  // port (spi-0..3 - real port SPI>127 --> position in digital table
+  // val LOW(0) HIGH(~0)
   setD,		//8
   // set the threshold
   set_Atreshold,
-  // receive message from I2C Master
+  // receive message from I2C Master - 1 byte length (<=CMD_BUF) - over CMD_BUF will be read but ignored
   msg_to_slave,	//10
-  // sending message to I2C Master
+  // sending message to I2C Master - ALWAYS CMD_BUF bytes
   msg_to_master,
   
 };
@@ -76,24 +80,30 @@ const byte ardStateLen[]={
 // type of DCC connected devices
 
 enum dccType {
+	//0-3 analog/digital
+	//0-15 digital
   no_dcc=0  ,         //0
   proximity,					// (analog only) zblizeniowy
-  light,              //
-  power,              // 	
-  occupancy,					//
+  analogSPARE1,
+  analogSPARE2,
+  light,              // 5
+  power,              // 6
+  occupancy,					// 7
   reed,								// kontaktron
-  sig2,               //
-  switch2,            //
-  sig3,               //
-  switch3,            //
-  xswitch,            //
+  sig2,               // 8
+  switch2,            // 9
+  sig3,               // 10
+  switch3,            // 11
+  xswitch,            // 12
 };
 
+/*
 enum dccAnalogType {
   proximity_a=0,				//0 analog only zblizeniowy
   no_dcc_a  ,         //1
 
 };
+*/
 
 // -------------------------------------- Arduino ------------------------------
 

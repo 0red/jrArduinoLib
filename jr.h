@@ -33,11 +33,20 @@ free(buffer);
 #ifndef jr_h
 #define jr_h
 
-#define SetBit(A,k)     ( A[(k/8)] |= (1 << (k%8)) )
-#define ClearBit(A,k)   ( A[(k/8)] &= ~(1 << (k%8)) )            
-#define TestBit(A,k)    ( A[(k/8)] & (1 << (k%8)) )
-#define GetBit(A,k)    ( A[(k/8)] & (1 << (k%8)) )
+#define SetBit(A,k)     ( A[((k)/8)] |= (1 << ((k)%8)) )
+#define ClearBit(A,k)   ( A[((k)/8)] &= ~(1 << ((k)%8)) )            
+#define TestBit(A,k)    ( A[((k)/8)] & (1 << ((k)%8)) )
+#define GetBit(A,k)     ( A[((k)/8)] & (1 << ((k)%8)) )
+
+#define GetBite(A,k)    ( A & (1 << ((k)%8)) )
+#define SetBite(A,k)     ( A |= (1 << ((k)%8)) )
+#define ClearBite(A,k)   ( A &= ~(1 << ((k)%8)) )            
+
 #define get_byte(bits)   ((bits) >>3) + ( ((bits) % 8) >0 ) 
+
+#define wire_writeword(res)   Wire.write(byte((res) & 0xFF)); Wire.write(byte((res) >>8 ));
+#define wire_readword(res) 		res=Wire.read();res+=Wire.read()<<8;
+
 
 void jr_soft_reset();
 

@@ -7,7 +7,7 @@
 #endif
 
 #ifndef CMD_PARAMS
-#define CMD_PARAMS 4
+#define CMD_PARAMS 5
 #endif
 
 #ifndef CMD_BUF
@@ -62,5 +62,6 @@ class JRcmd {
 	bool jr_cmd_getA (ParserParam *p1);				// get value of Analog PIN
 	bool jr_cmd_getD (ParserParam *p1);				// get value of Digital PIN
 	bool jr_cmd_main (ParserParam *p1);				// get value of pins
+	bool jr_cmd_clean(ParserParam *p1);				// clean monitor (20 Line Feed)
 	
 #endif

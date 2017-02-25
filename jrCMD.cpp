@@ -94,6 +94,7 @@ int  JRcmd::standard() {
 	add(F("SHOW") ,&jr_cmd_show);
 	add(F("RESET"),&jr_cmd_reset);
 	add(F("SOFT") ,&jr_cmd_softreset);
+	add(F("CLEAN"),&jr_cmd_clean);
 	
 	return parserCmdCount;
 
@@ -154,6 +155,14 @@ bool jr_cmd_getD(ParserParam *p1) {
 	JR_PRINTV(p.i[1],digitalRead(p.i[1]));
 };
 
+bool jr_cmd_clean(ParserParam *p1) {
+//bool jr_cmd_getD(ParserParam *p1){
+	JR_PRINTLNF("jr_cmd_clean"); 
+  ParserParam p=*p1;
+	if (!p.i[1]) p.i[1]=20;
+	for (int i=0;i<p.i[1];i++) { JR_LN;} 
+	
+};
 
 
 
