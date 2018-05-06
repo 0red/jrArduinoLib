@@ -4,8 +4,8 @@
 // if You use more than A7 needs to chage to 4
 // 4 max 16 Analog ports (Mega) 3 max A7 (Nano)
 #define ANALOG_MAX 		4
-// 6 max 64 Digital ports (Mega) 3 max A7 (Nano)
-#define DIGITAL_MAX 	6
+// 6 max 64 Digital ports (Mega) 4 max A7 (Nano)
+#define DIGITAL_MAX 	4
 // max allowed module and track length
 #define NAME_MAX 			10
 
@@ -13,6 +13,31 @@
 // +1 for bit informing for pending message to MASTER
 
 #define PROTOCOL_VER 	1
+
+#define jrD0 	0
+#define jrD1 	1
+#define jrD2 	2
+#define jrD3 	3
+#define jrD4 	4
+#define jrD5 	5
+#define jrD6 	6
+#define jrD7 	7
+#define jrD8 	8
+#define jrD9 	9
+#define jrD14 	14
+#define jrD15 	15
+#define jrD16 	16
+#define jrD17 	10
+#define jrD18 	11
+#define jrD19 	12
+#define jrD20 	13
+#define jrCS	10
+#define jrINT	2
+
+
+
+
+
 
 
 // get number of requested bytes based on bits number
@@ -109,12 +134,12 @@ enum dccAnalogType {
 
 struct Arduino {
   char name[NAME_MAX] ; // board name 
-  unsigned short board : 4; //board number
+  unsigned short board : 4; //board number will be use for emergency stop in the future
   unsigned short i2c : 7; //i2c bus number
 
   unsigned short digital : DIGITAL_MAX; //No of used digital ports
   unsigned short analog  : ANALOG_MAX;  //No of used analog  ports  
-  unsigned short bytes  : 5;  //No of used analog  ports  
+  unsigned short bytes  : 5;  			//No of used all  ports  
 
   unsigned long ts; // kiedy ostatnio widziany
   

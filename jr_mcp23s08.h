@@ -1,3 +1,4 @@
+#ifdef __AVR__
 #ifndef JR_mcp23s08_h
 #define JR_mcp23s08_h
 
@@ -66,4 +67,5 @@ class JRmcp23s08 {
 
 };
 
+#endif
 #endif

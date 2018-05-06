@@ -7,8 +7,10 @@
 #include "jr.h"
 #include <string.h>
 
+#ifdef __AVR__
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
+#endif
 
 #define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
 
@@ -117,8 +119,12 @@ bool jr_cmd_show(ParserParam *p1) {
   ParserParam p=*p1;
 	JR_PRINTV(F("LOW"),LOW);
 	JR_PRINTV(F("HIGH"),HIGH);	
+	#ifdef __AVR__
 	JR_PRINTV(F("A0"),A0);	
-	JR_PRINTV(F("A7"),A7);	
+	JR_PRINTV(F("A7"),A7);		
+	#endif
+	#ifdef ESP8266
+	#endif
 	JR_PRINTV(F("CMD_BUF"),CMD_BUF);
 	JR_LN;
 };
@@ -130,13 +136,12 @@ bool jr_cmd_reset(ParserParam *p1) {
   
 	//wdt_enable(WDTO_8S); // https://ariverpad.wordpress.com/2012/02/26/resetting-the-arduino-through-software-for-fun-and-profit/
 	//https://www.arduino.cc/en/Hacking/Bootloader  https://www.forums.adafruit.com/viewtopic.php?f=8&t=15435
-	
-	asm volatile ("  jmp 0");  
+#ifndef ESP8266
+#endif
 };
 
 bool jr_cmd_softreset(ParserParam *p1) {
 	JR_PRINTLNF("jr_cmd_softreset"); 
-	asm volatile ("  jmp 0");  
 };
 
 

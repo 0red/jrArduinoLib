@@ -32,6 +32,27 @@ free(buffer);
 
 #ifndef jr_h
 #define jr_h
+#include "Arduino.h"
+
+#define BYTE_TO_BINARY_PATTERN "%c%c%c%c %c%c%c%c"
+#define BYTE_TO_BINARY(byte)  \
+  (byte & 0x80 ? '1' : '0'), \
+  (byte & 0x40 ? '1' : '0'), \
+  (byte & 0x20 ? '1' : '0'), \
+  (byte & 0x10 ? '1' : '0'), \
+  (byte & 0x08 ? '1' : '0'), \
+  (byte & 0x04 ? '1' : '0'), \
+  (byte & 0x02 ? '1' : '0'), \
+  (byte & 0x01 ? '1' : '0') 
+/*  
+printf("Leading text "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(byte));
+For multi-byte types
+
+printf("m: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN"\n",
+  BYTE_TO_BINARY(m>>8), BYTE_TO_BINARY(m));  
+*/
+
+
 
 #define SetBit(A,k)     ( A[((k)/8)] |= (1 << ((k)%8)) )
 #define ClearBit(A,k)   ( A[((k)/8)] &= ~(1 << ((k)%8)) )            
@@ -47,8 +68,24 @@ free(buffer);
 #define wire_writeword(res)   Wire.write(byte((res) & 0xFF)); Wire.write(byte((res) >>8 ));
 #define wire_readword(res) 		res=Wire.read();res+=Wire.read()<<8;
 
+class jrLed {
+	public:
+		jrLed(byte apin);
+		jrLed(byte apin,byte ainterval);
+		void set (byte ainterval);
+		byte tick ();
+		byte tick (unsigned long currentMillis);
+	protected:
+		unsigned long _previousMillis = 0;
+		 byte  _interval=0;
+		 byte  _pin=0;
+		 byte  _state=0;
+		void _setLed();
+};
 
 void jr_soft_reset();
+int jrFreeRam ();
+//https://playground.arduino.cc/Code/EEPROMWriteAnything
 
 //void jr_i2c_detect(Stream *serial,Stream *wire);
 //void jr_i2c_detect(uint8_t first, uint8_t last,Stream *serial,Stream *wire) ;
@@ -127,3 +164,21 @@ void jr_soft_reset();
 
 
 #endif	
+
+
+
+/*
+Wire.begin (MY_ADDRESS);  // initialize hardware registers etc.
+  TWAR = (MY_ADDRESS << 1) | 1;  // enable broadcasts to be received
+  Wire.onReceive(receiveEvent);  // set up receive handler
+  http://www.gammon.com.au/i2c
+  
+  https://github.com/marcobrianza/ClickButton
+  https://github.com/sstaub/Ticker
+  https://github.com/esp8266/Arduino/tree/master/libraries/Ticker
+  https://github.com/PRosenb/DeepSleepScheduler
+  https://tttapa.github.io/ESP8266/Chap07%20-%20Wi-Fi%20Connections.html
+  https://github.com/esp8266/Arduino/tree/master/libraries/ESP8266mDNS
+  https://tttapa.github.io/ESP8266/Chap08%20-%20mDNS.html
+  https://github.com/arduino/Arduino/blob/master/hardware/arduino/avr/cores/arduino/IPAddress.cpp#L103-L113
+*/

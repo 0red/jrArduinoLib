@@ -1,3 +1,5 @@
+#ifdef __AVR__
+
 #define DEBUG
 #include "Arduino.h"
 #include "jr_mcp23s08.h"
@@ -201,3 +203,4 @@ void JRmcp23s08::_setRegister(byte targetDeviceOpcode, byte registerAddress, byt
   
   
 }
+#endif

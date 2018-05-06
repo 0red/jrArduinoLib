@@ -15,7 +15,9 @@
 #define CMD_BUF 32
 #endif
 
+#ifdef __AVR__
 #include <avr/wdt.h>
+#endif
 #include <stdint.h>
 #include <string.h>
 
