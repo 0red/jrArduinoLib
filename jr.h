@@ -53,7 +53,6 @@ printf("m: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN"\n",
 */
 
 
-
 #define SetBit(A,k)     ( A[((k)/8)] |= (1 << ((k)%8)) )
 #define ClearBit(A,k)   ( A[((k)/8)] &= ~(1 << ((k)%8)) )            
 #define TestBit(A,k)    ( A[((k)/8)] & (1 << ((k)%8)) )

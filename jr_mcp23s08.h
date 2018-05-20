@@ -58,11 +58,11 @@ class JRmcp23s08 {
 	byte _haen=0;
 	
 	char _spi_transfer(volatile char data);
-	byte _getRegister(byte targetDeviceOpcode, byte registerAddress);
+	byte _getRegister(volatile byte targetDeviceOpcode, volatile byte registerAddress);
 	void _setRegister(byte targetDeviceOpcode, byte registerAddress, byte value);
 	void _haen_prepare(int cs,int a0,int a1); // 
 	void _set_bit(byte reg,byte Apin,int high) ;
-	boolean _get_bit(byte reg,byte Apin) ;
+	boolean _get_bit(volatile byte reg,volatile byte Apin) ;
 
 
 };

@@ -25,6 +25,7 @@ JRmcp23s08::JRmcp23s08(int cs,int a0,int a1) {
 }
 
 void JRmcp23s08::_haen_prepare(int cs,int a0,int a1) {
+  //pinMode(cs, OUTPUT);
 
 	 // HAEN + a0,a1 set
 	_cs=cs;
@@ -156,11 +157,16 @@ void JRmcp23s08::_setRegister(byte targetDeviceOpcode, byte registerAddress, byt
  void JRmcp23s08::initialize() {
 
   pinMode(PIN_DATA_OUT, OUTPUT);
+  	DEBUG_PRINT("1");
   pinMode(PIN_DATA_IN, INPUT);
+  DEBUG_PRINT("2");
   pinMode(PIN_SPI_CLOCK, OUTPUT);
+  DEBUG_PRINT("3");
   pinMode(_cs, OUTPUT);
+  DEBUG_PRINT("4");
   
   digitalWrite(_cs, HIGH); // Disable slave
+  DEBUG_PRINT("5");
 
   //    Configure SPI Control Register (SPCR) (All values initially 0)
   //     Bit  Description
@@ -179,14 +185,14 @@ void JRmcp23s08::_setRegister(byte targetDeviceOpcode, byte registerAddress, byt
   dummy = SPSR;
   dummy = SPDR;
   delay(10);
-    
+  DEBUG_PRINT("6");  
   // Serial.println((1 << SPIF), BIN);
 
 	for (int i=0;i<11;i++) _setRegister(_deviceOpcodeWrite,i,0);
-
+DEBUG_PRINT("7");
   byte r=_getRegister(_deviceOpcodeRead,5);
   r |= SEQOP_DISABLED;
-  
+  DEBUG_PRINT("8");
   if (_haen) {
 		_setRegister (_deviceOpcodeWrite,5,r | (1<<3));
 		JR_PRINTBINV("haen set",(r | (1<<3)));JR_LN;
@@ -194,7 +200,7 @@ void JRmcp23s08::_setRegister(byte targetDeviceOpcode, byte registerAddress, byt
 		_setRegister (_deviceOpcodeWrite,5,r & (0<<3));
 		JR_PRINTBINV("haen clear",(r & (0<<3)));JR_LN;
   }
-  
+  DEBUG_PRINT("9");
   JR_VD(_cs);JR_LN;
   JR_VB(_haen);JR_LN;  
   JR_VB(_deviceOpcodeRead);JR_VD(_deviceOpcodeRead);JR_LN;

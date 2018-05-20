@@ -5,11 +5,26 @@
 // 4 max 16 Analog ports (Mega) 3 max A7 (Nano)
 #define ANALOG_MAX 		4
 // 6 max 64 Digital ports (Mega) 4 max A7 (Nano)
-#define DIGITAL_MAX 	4
+#define DIGITAL_MAX 	5
+// max allowed module and track length
+#define LED_MAX 	5
 // max allowed module and track length
 #define NAME_MAX 			10
 
-#define SIZE_LOCAL ANALOG_LOCAL+DIGITAL_LOCAL+1
+// how many bits will be 
+#define SENSORS_LEN	126
+#define OCCUPANCYS_LEN	48
+#define SIGNALS_LEN	58
+#define RELAYS_LEN	37
+#define TOTAL_LEN		SENSORS_LEN+OCCUPANCYS_LEN+RELAYS_LEN+SIGNALS_LEN*SIGNAL_TYPE_LEN
+#define NRSEN_LEN	7
+#define NRSIG_LEN	7
+#define SIGNAL_TYPE_LEN 2
+
+
+
+
+#define SIZE_LOCAL ANALOG_LOCAL+DIGITAL_LOCAL+LED_MAX+1
 // +1 for bit informing for pending message to MASTER
 
 #define PROTOCOL_VER 	1
@@ -80,6 +95,8 @@ enum ardState {
   msg_to_slave,	//10
   // sending message to I2C Master - ALWAYS CMD_BUF bytes
   msg_to_master,
+  // sending block msg
+  block_msg,
   
 };
 
@@ -115,11 +132,25 @@ enum dccType {
   power,              // 6
   occupancy,					// 7
   reed,								// kontaktron
-  sig2,               // 8
-  switch2,            // 9
-  sig3,               // 10
+  sig2,               // 8  //in case of relay
+  sig3,               // 9  //in case of relay
+  switch2,            // 10 
   switch3,            // 11
   xswitch,            // 12
+};
+
+enum signalType {
+  sem4=0,           // 0 czerwony/ziel/zó³ty/bialy
+  sem3	  ,         // 1  czerwony/ziel/zó³ty
+  lin3,             // 2  liniowy // stan automatyczny
+  man2,             // 3  nieb/bialy
+};
+
+enum signalVal {
+  red=0,           // 0 czerwony/ziel/zó³ty/bialy
+  yellow	  ,         // 1  czerwony/ziel/zó³ty
+  green,             // 2  liniowy // stan automatyczny
+  white,             // 3  nieb/bialy
 };
 
 /*
@@ -137,9 +168,10 @@ struct Arduino {
   unsigned short board : 4; //board number will be use for emergency stop in the future
   unsigned short i2c : 7; //i2c bus number
 
-  unsigned short digital : DIGITAL_MAX; //No of used digital ports
-  unsigned short analog  : ANALOG_MAX;  //No of used analog  ports  
-  unsigned short bytes  : 5;  			//No of used all  ports  
+  unsigned short digital : DIGITAL_MAX; 	//No of used digital ports
+  unsigned short analog  : ANALOG_MAX;  	//No of used analog  ports  
+  unsigned short led     : LED_MAX;  		//No of used led  ports  
+  unsigned short bytes  : 5;  					  //No of used all  ports  
 
   unsigned long ts; // kiedy ostatnio widziany
   
@@ -150,12 +182,28 @@ union ArduinoU {
   byte b[sizeof(Arduino)];
 };
 
+// -------------------------------------- LedPin ------------------------------
+
+struct LedPin {
+    char name[NAME_MAX] ; // pin name 
+    unsigned short nr       : NRSIG_LEN;    
+    unsigned short port     : DIGITAL_MAX; // 0-15,16-31 // first port of led
+    unsigned short dcc       : 10;
+    unsigned short signal_type: SIGNAL_TYPE_LEN;
+};
+
+union LedPinU {
+  LedPin a;
+  byte b[sizeof(LedPin)];
+};
+
 
 // -------------------------------------- DigitalPin ------------------------------
 
 struct DigitalPin {
     char name[NAME_MAX] ; // pin name 
-    unsigned short spi       : 2;    //1-3 SPI number 0- arduino
+    unsigned short nr       : NRSEN_LEN;    
+    unsigned short spi       : 3;    //1-7 SPI number 0- arduino
     unsigned short port     : DIGITAL_MAX; // arduino digital port  0-19 32-47 Iexpander 48-63 IIexpander or 0-51 Mega
     unsigned short pull_up  : 1;    
     unsigned short in_port   : 1;    
@@ -172,6 +220,7 @@ union DigitalPinU {
 
 struct AnalogPin {
     char name[NAME_MAX] ; // pin name 
+    unsigned short nr       : NRSEN_LEN;    
     unsigned short port:ANALOG_MAX; // port number
     unsigned int threshold:10;    // analog port treshold --> below LOW(0) :-) over HIGH(1)
     unsigned short dcc_type  : 2;

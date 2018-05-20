@@ -1,0 +1,74 @@
+#######################################
+# Syntax Coloring Map Servo
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+dccType												KEYWORD1
+Arduino												KEYWORD1
+ArduinoU											KEYWORD1
+DigitalPin										KEYWORD1
+DigitalPinU										KEYWORD1
+AnalogPin											KEYWORD1
+AnalogPinU										KEYWORD1
+dccAnalogType									KEYWORD1
+LedPin												KEYWORD1
+LedPinU												KEYWORD1
+
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+#NmraDcc											KEYWORD2
+#pin													KEYWORD2
+#init													KEYWORD2
+#process											KEYWORD2
+DEBUG_PRINT										KEYWORD2
+JR_PRINT											KEYWORD2
+JR_PRINTDEC										KEYWORD2
+JR_PRINTHEX										KEYWORD2
+JR_PRINTBIN										KEYWORD2
+JR_PRINTF											KEYWORD2
+JR_PRINTLN										KEYWORD2
+JR_PRINTLNF										KEYWORD2
+JR_PRINTV											KEYWORD2
+JR_PRINTDECV									KEYWORD2
+JR_PRINTHEXV									KEYWORD2
+JR_PRINTBINV									KEYWORD2
+JR_PRINTLNV										KEYWORD2
+SetBit												KEYWORD2
+ClearBit											KEYWORD2
+TestBit												KEYWORD2
+GetBit												KEYWORD2
+get_byte											KEYWORD2
+JR_V													KEYWORD2
+JR_VD													KEYWORD2
+JR_VH													KEYWORD2
+JR_VB													KEYWORD2
+JR_LN													KEYWORD2
+jr_soft_reset									KEYWORD2
+
+
+#######################################
+# Constants (LITERAL1)
+
+ANALOG_MAX										LITERAL1
+DIGITAL_MAX										LITERAL1
+NAME_MAX											LITERAL1
+PROTOCOL_VER									LITERAL1
+no_dcc												LITERAL1
+no_dcc_a											LITERAL1
+power													LITERAL1
+light													LITERAL1
+sig2													LITERAL1
+switch2												LITERAL1
+sig3													LITERAL1
+switch3												LITERAL1
+xswitch												LITERAL1
+occupancy											LITERAL1
+proximity											LITERAL1
+proximity_a										LITERAL1
+reed													LITERAL1
+#######################################
