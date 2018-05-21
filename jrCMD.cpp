@@ -42,7 +42,7 @@ int JRcmd::add(char const *cmd,jrCommandFoo *_foo) {
 	JR_PRINTF("JRcmd::add  ");JR_POINTER(cmd); JR_PRINTF(" ");JR_PRINTLN(cmd); 	
 	//strcpy(newItem.command,cmd);
 	newItem.command=cmd;
-	newItem.foo=_foo;
+			newItem.foo=_foo;
 	newItem.progmem=false;
 	jrDYN;jrDYN_Add(parserCmd,newItem,parserCmdCount,sizeof(ParserCmd));
 	return parserCmdCount;
@@ -67,7 +67,7 @@ int JRcmd::add(const __FlashStringHelper* cmd,jrCommandFoo *_foo) {
 	newItem.foo=_foo;
 	newItem.progmem=true;
 	jrDYN;jrDYN_Add(parserCmd,newItem,parserCmdCount,sizeof(ParserCmd));
-	JR_PRINTF("JRcmd::addF ");JR_POINTER(cmd); JR_PRINTF(" ");JR_PRINTLN(cmd); 	
+	JR_PRINTF("JRcmd::addF ");JR_POINTER(cmd); JR_POINTER(_foo);JR_PRINTF(" ");JR_PRINTLN(cmd); 	
 }
 
 //__FlashStringHelper*
@@ -253,7 +253,12 @@ int JRcmd::parse(char *bufor,byte bufor_used){
 						||
 						(parserCmd[l].progmem && strcmp_P(cmd.c[0],parserCmd[l].command)==0)) {
 						strcpy(cmd.raw,bufor);
+						
+						JR_PRINTLN(F("EXECUTE  ---- START ----"));//
+						JR_PRINTLN(bufor);
+
 						parserCmd[l].foo(&cmd);
+						JR_PRINTLN(F("EXECUTE  ----  END  ----"));//
 						return l;
 				}
 			}

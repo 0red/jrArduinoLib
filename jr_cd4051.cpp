@@ -1,7 +1,8 @@
 #include <Arduino.h>
+#define DEBUG
+
 #include "jr.h"
 #include "jr_cd4051.h"
-
 
 JRcd4051::JRcd4051(int outpin,int a,int b,int c) {
 	_outpin=outpin;
@@ -66,3 +67,57 @@ int JRcd4051::getA(int port){
 		JRcd4051 JRcd4051l(CD4051_LPIN,CD4051_APIN,CD4051_BPIN,CD4051_CPIN);
 	#endif 
 #endif
+
+
+	bool JRcd4051_cmdAll(ParserParam *p1) {
+	#ifdef CD4051_JR_BOARD
+		JR_PRINTLNF("JRcd4051_cmdAll");
+		JRcd4051_readAll();
+		JR_PRINTLNF("JRcd4051_readAll");
+		for (int i=0;i<16;i++) {
+			JR_PRINTV("port",JRcd4051_analog[1]);
+			JR_PRINTV(" treshold",JRcd4051_treshold[1]);
+			JR_PRINTV(" digital",(GetBit(JRcd4051_digital,i))?LOW:HIGH);
+			JR_LN;
+		}	
+		#endif 
+		#ifndef CD4051_JR_BOARD
+		JR_PRINTLNF("JRcd4051_cmdAll - CD4051_JR_BOARD not defined");
+		#endif 
+	};
+		
+	bool JRcd4051_getA(ParserParam *p1) {
+	#ifdef CD4051_JR_BOARD
+		JR_PRINTLNF("JRcd4051_getA");
+		JRcd4051_readAll();
+		JR_PRINTLNF("JRcd4051_readAll");
+		ParserParam p=*p1;
+		if (p.i[1]<16) {
+			JR_PRINTV(" read port",p.i[1]);
+			JR_PRINTV("analog",JRcd4051_analog[p.i[1]]);
+			JR_PRINTV(" treshold",JRcd4051_treshold[p.i[1]]);
+			JR_PRINTV(" digital",(GetBit(JRcd4051_digital,p.i[1]))?LOW:HIGH);
+			JR_LN;
+		}
+	#endif 
+	#ifndef CD4051_JR_BOARD
+		JR_PRINTLNF("JRcd4051_getA - CD4051_JR_BOARD not defined");
+	#endif 	
+	};
+
+	bool JRcd4051_setTreshhold(ParserParam *p1) {
+	#ifdef CD4051_JR_BOARD
+		JR_PRINTLNF("JRcd4051_setTreshhold");
+		ParserParam p=*p1;
+		if (p.i[1]<16 && p.i[2]<1024 ) {
+			JRcd4051_treshold[p.i[1]]=p.i[2];
+			JR_PRINTV("port",p.i[1]);
+			JR_PRINTV("treshold",p.i[2]);
+			JR_LN;
+		}
+	#endif 
+	#ifndef CD4051_JR_BOARD
+		JR_PRINTLNF("JRcd4051_getA - CD4051_JR_BOARD not defined");
+	#endif 	
+ 	};
+	

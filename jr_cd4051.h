@@ -1,7 +1,7 @@
 #ifndef jr_cd4051_h
 #define jr_cd4051_h
 #include "Arduino.h"
-
+#include "jrCMD.h"
 
 #define CD4051_APIN A1
 #define CD4051_BPIN A2
@@ -37,6 +37,9 @@ class JRcd4051 {
 	extern JRcd4051 JRcd4051k,JRcd4051l;
 		
 	void JRcd4051_readAll();
+	bool JRcd4051_cmdAll(ParserParam *p1);		
+	bool JRcd4051_getA(ParserParam *p1);		
+	bool JRcd4051_setTreshhold(ParserParam *p1);	
 	#endif
 
 #endif

@@ -1,4 +1,3 @@
-
 #ifndef JRCMD_h
 #define JRCMD_h
 
