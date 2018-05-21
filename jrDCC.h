@@ -124,19 +124,21 @@ const byte ardStateLen[]={
 enum dccType {
 	//0-3 analog/digital
 	//0-15 digital
-  no_dcc=0  ,         //0
-  proximity,					// (analog only) zblizeniowy
-  analogSPARE1,
-  analogSPARE2,
+  no_dcc=0  ,         // 0
+  proximity,					// 1 (analog only) zblizeniowy
+  analogSPARE1,				// 2
+  analogSPARE2,				// 3
+  spare,							// 4	//used in case of additional bit is needed for state forward switch3,xswitch,sig3
   light,              // 5
   power,              // 6
   occupancy,					// 7
-  reed,								// kontaktron
-  sig2,               // 8  //in case of relay
-  sig3,               // 9  //in case of relay
-  switch2,            // 10 
-  switch3,            // 11
-  xswitch,            // 12
+  reed,								// 8 kontaktron
+  sig2,               // 9  //in case of relay
+  sig3,               // 10  //in case of relay
+  switch2,            // 11 
+  switch3,            // 12
+  xswitch,            // 13
+  
 };
 
 enum signalType {
@@ -151,6 +153,14 @@ enum signalVal {
   yellow	  ,         // 1  czerwony/ziel/zó³ty
   green,             // 2  liniowy // stan automatyczny
   white,             // 3  nieb/bialy
+};
+
+enum blocktype {
+	bl_signal=0,
+	bl_switch,
+	bl_sensor,
+	bl_block,
+	bl_end,
 };
 
 /*
@@ -180,6 +190,21 @@ struct Arduino {
 union ArduinoU {
   Arduino a;
   byte b[sizeof(Arduino)];
+};
+
+
+// -------------------------------------- BlockMsg ------------------------------
+
+#define BLOCKMSG_NR_BITS 7
+struct BlockMsg {
+    unsigned short block    : 1;			// block 1/ unblock 0
+    unsigned short typ      : 3;    // blocktype
+    unsigned short nr       : BLOCKMSG_NR_BITS;			// number
+};
+
+union BlockMsgU {
+  BlockMsg a;
+  byte b[sizeof(BlockMsg)];
 };
 
 // -------------------------------------- LedPin ------------------------------
