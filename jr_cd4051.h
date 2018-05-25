@@ -27,13 +27,13 @@ class JRcd4051 {
 		byte _b;
 		byte _c;
 		byte _outpin;  
-		void _set(int port);
+		void _set(byte port);
 };
 
 	#ifdef CD4051_JR_BOARD
-	extern int JRcd4051_analog[16];
-	extern int JRcd4051_treshold[16];
-	extern byte JRcd4051_digital[2];
+	extern int JRcd4051_analog[17];
+	extern int JRcd4051_treshold[17];
+	extern byte JRcd4051_digital[3];
 	extern JRcd4051 JRcd4051k,JRcd4051l;
 		
 	void JRcd4051_readAll();

@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #define DEBUG
+#define TRESHOLD_BELOW 1
+
 
 #include "jr.h"
 #include "jr_cd4051.h"
@@ -16,19 +18,27 @@ JRcd4051::JRcd4051(int outpin,int a,int b,int c) {
 
 
 
-void JRcd4051::_set(int port) {
-	byte _port[1];
-	_port[0]=port % 8;
-	digitalWrite(_a, (GetBit(_port,0)?HIGH:LOW));	
-	digitalWrite(_b, (GetBit(_port,1)?HIGH:LOW));
-	digitalWrite(_c, (GetBit(_port,2)?HIGH:LOW));
+void JRcd4051::_set(byte port) {
+//	byte _port[1];
+//	_port[0]=port % 8;
+	port=port % 8;
+	digitalWrite(_a, (GetBite(port,0)?HIGH:LOW));	
+	digitalWrite(_b, (GetBite(port,1)?HIGH:LOW));
+	digitalWrite(_c, (GetBite(port,2)?HIGH:LOW));
 }
 
 int JRcd4051::getD(int port,int treshold){
+#ifdef TRESHOLD_BELOW
+  return (getA(port)<=treshold)?HIGH:LOW;
+#endif
+#ifndef TRESHOLD_BELOW
   return (getA(port)>=treshold)?HIGH:LOW;
+#endif
+  
 }
 
 int JRcd4051::getA(int port){
+	if (port==16) analogRead(A0);
 	_set(port);
 	return analogRead(_outpin);
 }
@@ -37,12 +47,12 @@ int JRcd4051::getA(int port){
 
 
 #ifdef CD4051_JR_BOARD
-	int JRcd4051_analog[16];
-	int JRcd4051_treshold[16];
-	byte JRcd4051_digital[2];
+	int JRcd4051_analog[17];
+	int JRcd4051_treshold[17]={500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500};
+	byte JRcd4051_digital[3];
 	
 	void JRcd4051_readAll(){
-		JRcd4051_digital[0]=0;JRcd4051_digital[1]=0;
+		JRcd4051_digital[0]=0;JRcd4051_digital[1]=0;JRcd4051_digital[2]=0;
 		for (int i=0;i<8;i++) {
 		#ifdef CD4051_KPIN
 		JRcd4051_analog[i]=JRcd4051k.getA(i);
@@ -57,6 +67,9 @@ int JRcd4051::getA(int port){
 			if (JRcd4051_analog[i+8]>=JRcd4051_treshold[i+8]) SetBit(JRcd4051_digital,i+8);
 		#endif 		
 		}
+		JRcd4051_analog[16]=analogRead(A0);
+		if (JRcd4051_analog[16]>=JRcd4051_treshold[16]) SetBit(JRcd4051_digital,16);
+		
 	}
 	
 	
@@ -74,9 +87,10 @@ int JRcd4051::getA(int port){
 		JR_PRINTLNF("JRcd4051_cmdAll");
 		JRcd4051_readAll();
 		JR_PRINTLNF("JRcd4051_readAll");
-		for (int i=0;i<16;i++) {
-			JR_PRINTV("port",JRcd4051_analog[1]);
-			JR_PRINTV(" treshold",JRcd4051_treshold[1]);
+		for (int i=0;i<17;i++) {
+			JR_PRINTV("port",i);
+			JR_PRINTV(" analog",JRcd4051_analog[i]);
+			JR_PRINTV(" treshold",JRcd4051_treshold[i]);
 			JR_PRINTV(" digital",(GetBit(JRcd4051_digital,i))?LOW:HIGH);
 			JR_LN;
 		}	
